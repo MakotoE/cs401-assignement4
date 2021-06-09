@@ -5,9 +5,7 @@ import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -31,7 +29,7 @@ public class ArtistsTest {
 		{
 			var s = "userID\tartistID\tweight\n2\t51\t13883";
 			var expected = new HashMap<>(Map.of(2,
-				new HashSet<>(Set.of(new Artists.ArtistInfo(51, 13883)))
+				new HashMap<>(Map.of(51, 13883))
 			));
 			assertEquals(expected, Artists.parseUserArtists(new StringReader(s)));
 		}
