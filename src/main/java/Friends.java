@@ -4,25 +4,26 @@ public class Friends {
 	public static Friends parseFriends(Readable file) {
 		var scanner = new Scanner(file);
 		scanner.useDelimiter("\\R");
-		var map = new HashMap<Integer, HashSet<Integer>>();
 
 		// Skip header
 		if (scanner.hasNext()) {
 			scanner.next();
 		}
 
+		var map = new HashMap<Integer, HashSet<Integer>>();
+
 		while (scanner.hasNext()) {
 			var line = scanner.next();
-			var tabIndex = line.indexOf("\t");
+			var tabIndex = line.indexOf("\t"); // TODO tabIndex could be -1
 			var userID = Integer.parseInt(line.substring(0, tabIndex));
 			var friendID = Integer.parseInt(line.substring(tabIndex + 1));
-			map.compute(userID, (id, list) -> {
-				if (list == null) {
+			map.compute(userID, (id, set) -> {
+				if (set == null) {
 					return new HashSet<>(Collections.singletonList(friendID));
 				}
 
-				list.add(friendID);
-				return list;
+				set.add(friendID);
+				return set;
 			});
 		}
 		return new Friends(map);
