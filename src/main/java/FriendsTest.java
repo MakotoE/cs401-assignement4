@@ -18,13 +18,18 @@ public class FriendsTest {
 			assertTrue(result.friendsOfUser(2).isEmpty());
 		}
 		{
+			assertThrows(ParseException.class,
+				() -> Friends.parseFriends(new StringReader("a\n2"))
+			);
+		}
+		{
 			var result = Friends.parseFriends(new StringReader("userID\tfriendID\n2\t275"));
 			assertEquals(1, result.size());
 			assertEquals(new HashSet<>(Collections.singleton(275)), result.friendsOfUser(2).get());
 		}
 		{
-			var result =
-				Friends.parseFriends(Files.newBufferedReader(Path.of("user_friends.dat")));
+			var file = Files.newBufferedReader(Path.of("user_friends.dat"));
+			var result = Friends.parseFriends(file);
 			assertEquals(1892, result.size());
 			var expected = new Integer[]{
 				275,
@@ -74,18 +79,24 @@ public class FriendsTest {
 				1,
 				Optional.empty()
 			),
-			new Test(new Friends(new HashMap<>(Map.of(
-				0,
+			new Test(new Friends(new HashMap<>(Map.of(0,
 				new HashSet<>(Set.of(1)),
 				1,
 				new HashSet<>(Set.of(2))
-			))), 0, 1, Optional.of(new HashSet<>())),
-			new Test(new Friends(new HashMap<>(Map.of(
+			))),
 				0,
+				1,
+				Optional.of(new HashSet<>())
+			),
+			new Test(new Friends(new HashMap<>(Map.of(0,
 				new HashSet<>(Set.of(2)),
 				1,
 				new HashSet<>(Set.of(2))
-			))), 0, 1, Optional.of(new HashSet<>(Set.of(2)))),
+			))),
+				0,
+				1,
+				Optional.of(new HashSet<>(Set.of(2)))
+			),
 		};
 
 		for (var test : tests) {

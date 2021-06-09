@@ -53,6 +53,9 @@ public class Artists {
 
 			var tabIndex0 = line.indexOf("\t");
 			var tabIndex1 = line.indexOf("\t", tabIndex0 + 1);
+			if (tabIndex0 == -1 || tabIndex1 == -1) {
+				throw new ParseException();
+			}
 
 			var userID = Integer.parseInt(line.substring(0, tabIndex0));
 			var artistID = Integer.parseInt(line.substring(tabIndex0 + 1, tabIndex1));

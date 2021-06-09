@@ -14,7 +14,10 @@ public class Friends {
 
 		while (scanner.hasNext()) {
 			var line = scanner.next();
-			var tabIndex = line.indexOf("\t"); // TODO tabIndex could be -1
+			var tabIndex = line.indexOf("\t");
+			if (tabIndex == -1) {
+				throw new ParseException();
+			}
 			var userID = Integer.parseInt(line.substring(0, tabIndex));
 			var friendID = Integer.parseInt(line.substring(tabIndex + 1));
 			map.compute(userID, (id, set) -> {
