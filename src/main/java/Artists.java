@@ -74,7 +74,32 @@ public class Artists {
 	}
 
 	public static HashMap<Integer, String> parseArtistNames(Readable file) {
-		throw new UnsupportedOperationException();
+		var scanner = new Scanner(file);
+		scanner.useDelimiter("\\R");
+
+		// Skip header
+		if (scanner.hasNext()) {
+			scanner.next();
+		}
+
+		var map = new HashMap<Integer, String>();
+
+		while (scanner.hasNext()) {
+			var line = scanner.next();
+			var tabIndex0 = line.indexOf("\t");
+			if (tabIndex0 == -1) {
+				throw new ParseException();
+			}
+			var tabIndex1 = line.indexOf("\t", tabIndex0 + 1);
+			if (tabIndex1 == -1) {
+				tabIndex1 = line.length();
+			}
+
+			var id = Integer.parseInt(line.substring(0, tabIndex0));
+			var artistName = line.substring(tabIndex0 + 1, tabIndex1);
+			map.put(id, artistName);
+		}
+		return map;
 	}
 
 	private final HashMap<Integer, HashSet<ArtistInfo>> userArtists;

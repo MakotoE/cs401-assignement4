@@ -42,4 +42,26 @@ public class ArtistsTest {
 			assertEquals(50, result.get(2).size());
 		}
 	}
+
+	@Test
+	public void parseArtistNames() throws IOException {
+		assertEquals(0, Artists.parseArtistNames(new StringReader("")).size());
+		{
+			assertThrows(
+				ParseException.class,
+				() -> Artists.parseArtistNames(new StringReader("a\n2"))
+			);
+		}
+		{
+			var s = "id\tname\turl\tpictureURL\n1\tMALICE MIZER";
+			var expected = new HashMap<>(Map.of(1, "MALICE MIZER"));
+			assertEquals(expected, Artists.parseArtistNames(new StringReader(s)));
+		}
+		{
+			var file = Files.newBufferedReader(Path.of("artists.dat"));
+			var result = Artists.parseArtistNames(file);
+			assertEquals(17632, result.size());
+			assertEquals("MALICE MIZER", result.get(1));
+		}
+	}
 }
