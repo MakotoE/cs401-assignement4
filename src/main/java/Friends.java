@@ -34,7 +34,7 @@ public class Friends {
 
 	private final HashMap<Integer, HashSet<Integer>> map;
 
-	public Friends(HashMap<Integer, HashSet<Integer>> map) {
+	Friends(HashMap<Integer, HashSet<Integer>> map) {
 		this.map = map;
 	}
 

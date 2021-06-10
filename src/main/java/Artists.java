@@ -5,7 +5,7 @@ public class Artists {
 		return new Artists(parseUserArtists(userArtistsFile), parseArtistNames(artistsFile));
 	}
 
-	public static HashMap<Integer, HashMap<Integer, Integer>> parseUserArtists(Readable file) {
+	static HashMap<Integer, HashMap<Integer, Integer>> parseUserArtists(Readable file) {
 		var scanner = new Scanner(file);
 		scanner.useDelimiter("\\R");
 
@@ -40,7 +40,7 @@ public class Artists {
 		return map;
 	}
 
-	public static HashMap<Integer, String> parseArtistNames(Readable file) {
+	static HashMap<Integer, String> parseArtistNames(Readable file) {
 		var scanner = new Scanner(file);
 		scanner.useDelimiter("\\R");
 
@@ -73,14 +73,35 @@ public class Artists {
 	private final HashMap<Integer, HashMap<Integer, Integer>> userArtists;
 	private final HashMap<Integer, String> artistNames;
 
-	public Artists(HashMap<Integer, HashMap<Integer, Integer>> userArtists,
-				   HashMap<Integer, String> artistNames) {
+	Artists(HashMap<Integer, HashMap<Integer, Integer>> userArtists,
+			HashMap<Integer, String> artistNames) {
 		this.userArtists = userArtists;
 		this.artistNames = artistNames;
 	}
 
 	public Optional<String[]> commonArtists(int user1, int user2) {
-		throw new UnsupportedOperationException();
+		var user1Artists = userArtists.get(user1);
+		var user2Artists = userArtists.get(user2);
+		if (user1Artists == null || user2Artists == null) {
+			return Optional.empty();
+		}
+
+		var commonArtists = user1Artists.keySet();
+		commonArtists.retainAll(user2Artists.keySet());
+
+		return Optional.of(artistIDToString(artistNames, commonArtists));
+	}
+
+	static String[] artistIDToString(HashMap<Integer, String> artistNames, Set<Integer> ids) {
+		var result = new ArrayList<String>();
+		for (var id : ids) {
+			var name = artistNames.get(id);
+			if (name == null) {
+				throw new RuntimeException("name not found: " + id);
+			}
+			result.add(name);
+		}
+		return result.toArray(String[]::new);
 	}
 
 	public String[] top10Artists() {
