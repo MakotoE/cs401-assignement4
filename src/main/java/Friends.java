@@ -39,12 +39,12 @@ public class Friends {
 	}
 
 	public Optional<HashSet<Integer>> friendsOfUser(int user) {
-		var value = map.get(user);
-		if (value == null) {
+		var friends = map.get(user);
+		if (friends == null) {
 			return Optional.empty();
 		}
 
-		return Optional.of(new HashSet<>(value));
+		return Optional.of(new HashSet<>(friends));
 	}
 
 	public Optional<HashSet<Integer>> commonFriends(int user1, int user2) {

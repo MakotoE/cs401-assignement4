@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Artists {
 	public static Artists parseArtists(Readable userArtistsFile, Readable artistsFile) {
@@ -73,8 +74,10 @@ public class Artists {
 	private final HashMap<Integer, HashMap<Integer, Integer>> userArtists;
 	private final HashMap<Integer, String> artistNames;
 
-	Artists(HashMap<Integer, HashMap<Integer, Integer>> userArtists,
-			HashMap<Integer, String> artistNames) {
+	Artists(
+		HashMap<Integer, HashMap<Integer, Integer>> userArtists,
+		HashMap<Integer, String> artistNames
+	) {
 		this.userArtists = userArtists;
 		this.artistNames = artistNames;
 	}
@@ -92,7 +95,7 @@ public class Artists {
 		return Optional.of(artistIDToString(artistNames, commonArtists));
 	}
 
-	static String[] artistIDToString(HashMap<Integer, String> artistNames, Set<Integer> ids) {
+	static String[] artistIDToString(HashMap<Integer, String> artistNames, Iterable<Integer> ids) {
 		var result = new ArrayList<String>();
 		for (var id : ids) {
 			var name = artistNames.get(id);
@@ -104,8 +107,29 @@ public class Artists {
 		return result.toArray(String[]::new);
 	}
 
-	public String[] top10Artists() {
-		throw new UnsupportedOperationException();
+	static HashMap<Integer, Integer> aggregateListenCounts(
+		HashMap<Integer, HashMap<Integer, Integer>> userArtists
+	) {
+		var artistListenCount = new HashMap<Integer, Integer>();
+		for (var user : userArtists.entrySet()) {
+			for (var artist : user.getValue().entrySet()) {
+				artistListenCount.merge(artist.getKey(), artist.getValue(), Integer::sum);
+			}
+		}
+		return artistListenCount;
+	}
+
+	public String[] top10ArtistNames() {
+		var listenCounts = new ArrayList<>(aggregateListenCounts(userArtists).entrySet());
+		listenCounts.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+
+		// Get ids of top 10 artists
+		var artistIDs = listenCounts.stream().limit(Integer.min(
+			10,
+			listenCounts.size()
+		)).map(Map.Entry::getKey).collect(Collectors.toList());
+
+		return artistIDToString(artistNames, artistIDs);
 	}
 
 	public String[] top10ArtistsOfUsers(ArrayList<Integer> users) {

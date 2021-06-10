@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -95,16 +93,62 @@ public class ArtistsTest {
 
 	@Test
 	public void artistIDToString() {
-		assertEquals(0, Artists.artistIDToString(new HashMap<>(), Set.of()).length);
+		assertEquals(0, Artists.artistIDToString(new HashMap<>(), new ArrayList<>()).length);
 		{
 			assertThrows(RuntimeException.class,
-				() -> Artists.artistIDToString(new HashMap<>(), Set.of(0))
+				() -> Artists.artistIDToString(new HashMap<>(), Collections.singletonList(0))
 			);
 		}
 		{
 			var map = new HashMap<>(Map.of(0, "a"));
-			var result = Artists.artistIDToString(map, Set.of(0));
+			var result = Artists.artistIDToString(map, Collections.singletonList(0));
 			assertArrayEquals(new String[]{"a"}, result);
+		}
+	}
+
+	@Test
+	public void aggregateListenCounts() {
+		assertEquals(new HashMap<>(), Artists.aggregateListenCounts(new HashMap<>()));
+		{
+			var result = Artists.aggregateListenCounts(new HashMap<>(Map.of(0,
+				new HashMap<>(Map.of(1, 1))
+			)));
+			assertEquals(new HashMap<>(Map.of(1, 1)), result);
+		}
+		{
+			var result = Artists.aggregateListenCounts(new HashMap<>(Map.of(0,
+				new HashMap<>(Map.of(1, 1)),
+				1,
+				new HashMap<>(Map.of(1, 2))
+			)));
+			assertEquals(new HashMap<>(Map.of(1, 3)), result);
+		}
+	}
+
+	@Test
+	public void top10ArtistNames() {
+		{
+			var artists = new Artists(new HashMap<>(), new HashMap<>());
+			assertArrayEquals(new String[]{}, artists.top10ArtistNames());
+		}
+		{
+			var artists = new Artists(new HashMap<>(Map.of(0, new HashMap<>(Map.of(1, 1)))),
+				new HashMap<>(Map.of(1, "name"))
+			);
+			assertArrayEquals(new String[]{"name"}, artists.top10ArtistNames());
+		}
+		{
+			var artists = new Artists(new HashMap<>(Map.of(0,
+				new HashMap<>(Map.of(1, 1)),
+				1,
+				new HashMap<>(Map.of(2, 2))
+			)),
+				new HashMap<>(Map.of(1, "a", 2, "b"))
+			);
+			assertArrayEquals(new String[]{
+				"b",
+				"a"
+			}, artists.top10ArtistNames());
 		}
 	}
 }
