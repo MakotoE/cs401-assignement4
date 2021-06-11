@@ -1,6 +1,8 @@
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class LastFMRecommender {
 	private final Friends friends;
@@ -51,10 +53,29 @@ public class LastFMRecommender {
 	}
 
 	public void listTop10() {
-		
+		for (var name : artists.top10ArtistNames()) {
+			System.out.println(name);
+		}
 	}
 
 	public void recommend10(int user) {
+		var friendsOfUser = friends.friendsOfUser(user);
+		if (friendsOfUser.isEmpty()) {
+			System.out.println("user not found");
+			return;
+		}
 
+		var users = new ArrayList<>(Collections.singletonList(user));
+		users.addAll(friendsOfUser.get());
+		var result = artists.top10ArtistsOfUsers(users);
+
+		if (result.isEmpty()) {
+			System.out.println("user not found");
+			return;
+		}
+
+		for (var name : result.get()) {
+			System.out.println(name);
+		}
 	}
 }
