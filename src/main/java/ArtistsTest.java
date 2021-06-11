@@ -77,7 +77,7 @@ public class ArtistsTest {
 			)),
 				new HashMap<>(Map.of(2, "name"))
 			);
-			assertArrayEquals(new String[]{"name"}, artists.commonArtists(0, 1).get());
+			assertEquals(Collections.singletonList("name"), artists.commonArtists(0, 1).get());
 		}
 		{
 			var artists = new Artists(new HashMap<>(Map.of(0,
@@ -87,13 +87,13 @@ public class ArtistsTest {
 			)),
 				new HashMap<>(Map.of(2, "name"))
 			);
-			assertArrayEquals(new String[]{"name"}, artists.commonArtists(0, 1).get());
+			assertEquals(Collections.singletonList("name"), artists.commonArtists(0, 1).get());
 		}
 	}
 
 	@Test
 	public void artistIDToString() {
-		assertEquals(0, Artists.artistIDToString(new HashMap<>(), new ArrayList<>()).length);
+		assertTrue(Artists.artistIDToString(new HashMap<>(), new ArrayList<>()).isEmpty());
 		{
 			assertThrows(RuntimeException.class,
 				() -> Artists.artistIDToString(new HashMap<>(), Collections.singletonList(0))
@@ -102,7 +102,7 @@ public class ArtistsTest {
 		{
 			var map = new HashMap<>(Map.of(0, "a"));
 			var result = Artists.artistIDToString(map, Collections.singletonList(0));
-			assertArrayEquals(new String[]{"a"}, result);
+			assertEquals(Collections.singletonList("a"), result);
 		}
 	}
 
@@ -110,13 +110,13 @@ public class ArtistsTest {
 	public void top10ArtistNames() {
 		{
 			var artists = new Artists(new HashMap<>(), new HashMap<>());
-			assertArrayEquals(new String[]{}, artists.top10ArtistNames());
+			assertTrue(artists.top10ArtistNames().isEmpty());
 		}
 		{
 			var artists = new Artists(new HashMap<>(Map.of(0, new HashMap<>(Map.of(1, 1)))),
 				new HashMap<>(Map.of(1, "name"))
 			);
-			assertArrayEquals(new String[]{"name"}, artists.top10ArtistNames());
+			assertEquals(Collections.singletonList("name"), artists.top10ArtistNames());
 		}
 		{
 			var artists = new Artists(new HashMap<>(Map.of(0,
@@ -126,10 +126,7 @@ public class ArtistsTest {
 			)),
 				new HashMap<>(Map.of(1, "a", 2, "b"))
 			);
-			assertArrayEquals(new String[]{
-				"b",
-				"a"
-			}, artists.top10ArtistNames());
+			assertEquals(Arrays.asList("b", "a"), artists.top10ArtistNames());
 		}
 	}
 
@@ -179,8 +176,7 @@ public class ArtistsTest {
 	public void top10ArtistsOfUsers() {
 		{
 			var artists = new Artists(new HashMap<>(), new HashMap<>());
-			assertArrayEquals(new String[]{},
-				artists.top10ArtistsOfUsers(new ArrayList<>()).get());
+			assertTrue(artists.top10ArtistsOfUsers(new ArrayList<>()).get().isEmpty());
 		}
 		{
 			var artists = new Artists(new HashMap<>(), new HashMap<>());
@@ -192,7 +188,10 @@ public class ArtistsTest {
 				new HashMap<>(Map.of(1, "name"))
 			);
 			var users = new ArrayList<>(Collections.singletonList(0));
-			assertArrayEquals(new String[]{"name"}, artists.top10ArtistsOfUsers(users).get());
+			assertEquals(
+				Collections.singletonList("name"),
+				artists.top10ArtistsOfUsers(users).get()
+			);
 		}
 	}
 }

@@ -82,7 +82,7 @@ public class Artists {
 		this.artistNames = artistNames;
 	}
 
-	public Optional<String[]> commonArtists(int user1, int user2) {
+	public Optional<List<String>> commonArtists(int user1, int user2) {
 		var user1Artists = userArtists.get(user1);
 		var user2Artists = userArtists.get(user2);
 		if (user1Artists == null || user2Artists == null) {
@@ -92,28 +92,25 @@ public class Artists {
 		var commonArtists = user1Artists.keySet();
 		commonArtists.retainAll(user2Artists.keySet());
 
-		return Optional.of(artistIDToString(artistNames, commonArtists));
+		return Optional.of(artistIDToString(artistNames, new ArrayList<>(commonArtists)));
 	}
 
-	static String[] artistIDToString(HashMap<Integer, String> artistNames, Iterable<Integer> ids) {
-		var result = new ArrayList<String>();
-		for (var id : ids) {
+	static List<String> artistIDToString(HashMap<Integer, String> artistNames, List<Integer> ids) {
+		return ids.stream().map(id -> {
 			var name = artistNames.get(id);
 			if (name == null) {
 				throw new RuntimeException("name not found: " + id);
 			}
-			result.add(name);
-		}
-		return result.toArray(String[]::new);
+			return name;
+		}).collect(Collectors.toList());
 	}
 
-	public String[] top10ArtistNames() {
-		@SuppressWarnings("OptionalGetWithoutIsPresent")
-		var top10Artists = top10Artists(listenCountsOfUsers(
-			userArtists,
-			userArtists.keySet()
-		).get());
-		return artistIDToString(artistNames, top10Artists);
+	public List<String> top10ArtistNames() {
+		// listenCountsOfUsers() only returns empty if user was not found
+		//noinspection OptionalGetWithoutIsPresent
+		return artistIDToString(artistNames,
+			top10Artists(listenCountsOfUsers(userArtists, userArtists.keySet()).get())
+		);
 	}
 
 	List<Integer> top10Artists(HashMap<Integer, Integer> artistToListenCount) {
@@ -142,12 +139,11 @@ public class Artists {
 		return Optional.of(artistListenCount);
 	}
 
-	public Optional<String[]> top10ArtistsOfUsers(ArrayList<Integer> users) {
+	public Optional<List<String>> top10ArtistsOfUsers(ArrayList<Integer> users) {
 		var result = listenCountsOfUsers(userArtists, users);
 		if (result.isEmpty()) {
 			return Optional.empty();
 		}
-		var top10Artists = top10Artists(result.get());
-		return Optional.of(artistIDToString(artistNames, top10Artists));
+		return Optional.of(artistIDToString(artistNames, top10Artists(result.get())));
 	}
 }
