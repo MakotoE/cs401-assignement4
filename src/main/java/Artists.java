@@ -107,32 +107,47 @@ public class Artists {
 		return result.toArray(String[]::new);
 	}
 
-	static HashMap<Integer, Integer> aggregateListenCounts(
-		HashMap<Integer, HashMap<Integer, Integer>> userArtists
+	public String[] top10ArtistNames() {
+		@SuppressWarnings("OptionalGetWithoutIsPresent")
+		var top10Artists = top10Artists(listenCountsOfUsers(
+			userArtists,
+			userArtists.keySet()
+		).get());
+		return artistIDToString(artistNames, top10Artists);
+	}
+
+	List<Integer> top10Artists(HashMap<Integer, Integer> artistToListenCount) {
+		var listenCounts = new ArrayList<>(artistToListenCount.entrySet());
+		listenCounts.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+
+		return listenCounts.stream().limit(Integer.min(10,
+			listenCounts.size()
+		)).map(Map.Entry::getKey).collect(Collectors.toList());
+	}
+
+	static Optional<HashMap<Integer, Integer>> listenCountsOfUsers(
+		HashMap<Integer, HashMap<Integer, Integer>> userArtists, Iterable<Integer> users
 	) {
 		var artistListenCount = new HashMap<Integer, Integer>();
-		for (var user : userArtists.entrySet()) {
-			for (var artist : user.getValue().entrySet()) {
+		for (var user : users) {
+			var artistsOfUser = userArtists.get(user);
+			if (artistsOfUser == null) {
+				return Optional.empty();
+			}
+
+			for (var artist : artistsOfUser.entrySet()) {
 				artistListenCount.merge(artist.getKey(), artist.getValue(), Integer::sum);
 			}
 		}
-		return artistListenCount;
+		return Optional.of(artistListenCount);
 	}
 
-	public String[] top10ArtistNames() {
-		var listenCounts = new ArrayList<>(aggregateListenCounts(userArtists).entrySet());
-		listenCounts.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
-
-		// Get ids of top 10 artists
-		var artistIDs = listenCounts.stream().limit(Integer.min(
-			10,
-			listenCounts.size()
-		)).map(Map.Entry::getKey).collect(Collectors.toList());
-
-		return artistIDToString(artistNames, artistIDs);
-	}
-
-	public String[] top10ArtistsOfUsers(ArrayList<Integer> users) {
-		throw new UnsupportedOperationException();
+	public Optional<String[]> top10ArtistsOfUsers(ArrayList<Integer> users) {
+		var result = listenCountsOfUsers(userArtists, users);
+		if (result.isEmpty()) {
+			return Optional.empty();
+		}
+		var top10Artists = top10Artists(result.get());
+		return Optional.of(artistIDToString(artistNames, top10Artists));
 	}
 }

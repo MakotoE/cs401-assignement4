@@ -107,25 +107,6 @@ public class ArtistsTest {
 	}
 
 	@Test
-	public void aggregateListenCounts() {
-		assertEquals(new HashMap<>(), Artists.aggregateListenCounts(new HashMap<>()));
-		{
-			var result = Artists.aggregateListenCounts(new HashMap<>(Map.of(0,
-				new HashMap<>(Map.of(1, 1))
-			)));
-			assertEquals(new HashMap<>(Map.of(1, 1)), result);
-		}
-		{
-			var result = Artists.aggregateListenCounts(new HashMap<>(Map.of(0,
-				new HashMap<>(Map.of(1, 1)),
-				1,
-				new HashMap<>(Map.of(1, 2))
-			)));
-			assertEquals(new HashMap<>(Map.of(1, 3)), result);
-		}
-	}
-
-	@Test
 	public void top10ArtistNames() {
 		{
 			var artists = new Artists(new HashMap<>(), new HashMap<>());
@@ -149,6 +130,69 @@ public class ArtistsTest {
 				"b",
 				"a"
 			}, artists.top10ArtistNames());
+		}
+	}
+
+	@Test
+	public void listenCountsOfUsers() {
+		assertEquals(new HashMap<>(),
+			Artists.listenCountsOfUsers(new HashMap<>(), new ArrayList<>()).get()
+		);
+		{
+			var result = Artists.listenCountsOfUsers(new HashMap<>(Map.of(0,
+				new HashMap<>(Map.of(1, 1))
+			)), Collections.singletonList(0)).get();
+			assertEquals(new HashMap<>(Map.of(1, 1)), result);
+		}
+		{
+			// All users
+			var result = Artists.listenCountsOfUsers(new HashMap<>(Map.of(0,
+				new HashMap<>(Map.of(1, 1)),
+				1,
+				new HashMap<>(Map.of(1, 2))
+				)),
+				Arrays.asList(0, 1)
+			).get();
+			assertEquals(new HashMap<>(Map.of(1, 3)), result);
+		}
+		{
+			// One user
+			var result = Artists.listenCountsOfUsers(new HashMap<>(Map.of(0,
+				new HashMap<>(Map.of(1, 1)),
+				1,
+				new HashMap<>(Map.of(1, 2))
+				)),
+				Collections.singletonList(0)
+			).get();
+			assertEquals(new HashMap<>(Map.of(1, 1)), result);
+		}
+		{
+			// User not found
+			var userArtists = new HashMap<>(Map.of(0, new HashMap<>(Map.of(1, 1))));
+			assertTrue(Artists.listenCountsOfUsers(userArtists,
+				Collections.singletonList(1)
+			).isEmpty());
+		}
+	}
+
+	@Test
+	public void top10ArtistsOfUsers() {
+		{
+			var artists = new Artists(new HashMap<>(), new HashMap<>());
+			assertArrayEquals(new String[]{},
+				artists.top10ArtistsOfUsers(new ArrayList<>()).get());
+		}
+		{
+			var artists = new Artists(new HashMap<>(), new HashMap<>());
+			var users = new ArrayList<>(Collections.singletonList(0));
+			assertTrue(artists.top10ArtistsOfUsers(users).isEmpty());
+		}
+		{
+			var artists = new Artists(new HashMap<>(Map.of(0, new HashMap<>(Map.of(1, 1)))),
+				new HashMap<>(Map.of(1, "name"))
+			);
+			var users = new ArrayList<>(Collections.singletonList(0));
+			assertArrayEquals(new String[]{"name"}, artists.top10ArtistsOfUsers(users).get());
 		}
 	}
 }
