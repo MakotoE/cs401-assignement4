@@ -1,6 +1,12 @@
 import java.util.*;
 
+/**
+ * Contains data about friends.
+ */
 public class Friends {
+	/**
+	 * @param file user_friends.dat file
+	 */
 	public static Friends parse(Readable file) {
 		var scanner = new Scanner(file);
 		scanner.useDelimiter("\\R");
@@ -38,6 +44,9 @@ public class Friends {
 		this.map = map;
 	}
 
+	/**
+	 * @return UserIDs of the friends of the given user.
+	 */
 	public Optional<HashSet<Integer>> friendsOfUser(int user) {
 		var friends = map.get(user);
 		if (friends == null) {
@@ -47,6 +56,9 @@ public class Friends {
 		return Optional.of(new HashSet<>(friends));
 	}
 
+	/**
+	 * @return Intersection of the friends of user1 and user2.
+	 */
 	public Optional<HashSet<Integer>> commonFriends(int user1, int user2) {
 		var user1Friends = friendsOfUser(user1);
 		var user2Friends = friendsOfUser(user2);

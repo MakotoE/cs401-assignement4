@@ -1,11 +1,18 @@
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Contains data about user listening activity and artist names.
+ */
 public class Artists {
 	public static Artists parse(Readable userArtistsFile, Readable artistsFile) {
 		return new Artists(parseUserArtists(userArtistsFile), parseArtistNames(artistsFile));
 	}
 
+	/**
+	 * @param file user_artists.dat file
+	 * @return Mapping of userID to a map of artistID to listen count
+	 */
 	static HashMap<Integer, HashMap<Integer, Integer>> parseUserArtists(Readable file) {
 		var scanner = new Scanner(file);
 		scanner.useDelimiter("\\R");
@@ -41,6 +48,10 @@ public class Artists {
 		return map;
 	}
 
+	/**
+	 * @param file artists.dat file
+	 * @return Map of artist ID to name
+	 */
 	static HashMap<Integer, String> parseArtistNames(Readable file) {
 		var scanner = new Scanner(file);
 		scanner.useDelimiter("\\R");
@@ -82,6 +93,9 @@ public class Artists {
 		this.artistNames = artistNames;
 	}
 
+	/**
+	 * @return Artists listened to by both user1 and user2.
+	 */
 	public Optional<List<String>> commonArtists(int user1, int user2) {
 		var user1Artists = userArtists.get(user1);
 		var user2Artists = userArtists.get(user2);
@@ -95,6 +109,9 @@ public class Artists {
 		return Optional.of(artistIDToString(artistNames, new ArrayList<>(commonArtists)));
 	}
 
+	/**
+	 * Maps artist IDs to artist names.
+	 */
 	static List<String> artistIDToString(HashMap<Integer, String> artistNames, List<Integer> ids) {
 		return ids.stream().map(id -> {
 			var name = artistNames.get(id);
@@ -105,6 +122,9 @@ public class Artists {
 		}).collect(Collectors.toList());
 	}
 
+	/**
+	 * @return Top 10 most popular artists
+	 */
 	public List<String> top10ArtistNames() {
 		// listenCountsOfUsers() only returns empty if user was not found
 		//noinspection OptionalGetWithoutIsPresent
@@ -113,6 +133,9 @@ public class Artists {
 		);
 	}
 
+	/**
+	 * @return Top 10 most popular artists
+	 */
 	List<Integer> top10Artists(HashMap<Integer, Integer> artistToListenCount) {
 		var listenCounts = new ArrayList<>(artistToListenCount.entrySet());
 		listenCounts.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
@@ -122,6 +145,9 @@ public class Artists {
 		)).map(Map.Entry::getKey).collect(Collectors.toList());
 	}
 
+	/**
+	 * Aggregates listen counts of artists by given users.
+	 */
 	static Optional<HashMap<Integer, Integer>> listenCountsOfUsers(
 		HashMap<Integer, HashMap<Integer, Integer>> userArtists, Iterable<Integer> users
 	) {
@@ -139,6 +165,9 @@ public class Artists {
 		return Optional.of(artistListenCount);
 	}
 
+	/**
+	 * @return Top 10 artists of given users
+	 */
 	public Optional<List<String>> top10ArtistsOfUsers(ArrayList<Integer> users) {
 		var result = listenCountsOfUsers(userArtists, users);
 		if (result.isEmpty()) {
