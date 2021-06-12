@@ -2,7 +2,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Artists {
-	public static Artists parseArtists(Readable userArtistsFile, Readable artistsFile) {
+	public static Artists parse(Readable userArtistsFile, Readable artistsFile) {
 		return new Artists(parseUserArtists(userArtistsFile), parseArtistNames(artistsFile));
 	}
 

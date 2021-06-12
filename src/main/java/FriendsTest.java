@@ -13,23 +13,23 @@ public class FriendsTest {
 	@Test
 	public void parseFriends() throws IOException {
 		{
-			var result = Friends.parseFriends(new StringReader(""));
+			var result = Friends.parse(new StringReader(""));
 			assertEquals(0, result.size());
 			assertTrue(result.friendsOfUser(2).isEmpty());
 		}
 		{
 			assertThrows(ParseException.class,
-				() -> Friends.parseFriends(new StringReader("a\n2"))
+				() -> Friends.parse(new StringReader("a\n2"))
 			);
 		}
 		{
-			var result = Friends.parseFriends(new StringReader("userID\tfriendID\n2\t275"));
+			var result = Friends.parse(new StringReader("userID\tfriendID\n2\t275"));
 			assertEquals(1, result.size());
 			assertEquals(new HashSet<>(Collections.singleton(275)), result.friendsOfUser(2).get());
 		}
 		{
 			var file = Files.newBufferedReader(Path.of("user_friends.dat"));
-			var result = Friends.parseFriends(file);
+			var result = Friends.parse(file);
 			assertEquals(1892, result.size());
 			var expected = new Integer[]{
 				275,

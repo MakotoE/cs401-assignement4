@@ -9,8 +9,8 @@ public class LastFMRecommender {
 	private final Artists artists;
 
 	public LastFMRecommender() throws IOException {
-		this.friends = Friends.parseFriends(Files.newBufferedReader(Path.of("user_friends.dat")));
-		this.artists = Artists.parseArtists(
+		this.friends = Friends.parse(Files.newBufferedReader(Path.of("user_friends.dat")));
+		this.artists = Artists.parse(
 			Files.newBufferedReader(Path.of("user_artists.dat")),
 			Files.newBufferedReader(Path.of("artists.dat"))
 		);

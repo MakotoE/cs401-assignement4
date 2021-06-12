@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class Friends {
-	public static Friends parseFriends(Readable file) {
+	public static Friends parse(Readable file) {
 		var scanner = new Scanner(file);
 		scanner.useDelimiter("\\R");
 
